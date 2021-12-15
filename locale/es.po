@@ -1,0 +1,26 @@
+#
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:account.statement.journal,group_moves_by_account:"
+msgid "Group moves by account"
+msgstr "Agrupar asientos por cuenta"
+
+msgctxt "help:account.statement.journal,group_moves_by_account:"
+msgid "Group the statement lines by account when creating moves"
+msgstr ""
+"Permite agrupar las líneas del extracto por cuenta contable al crear los "
+"asientos"
+
+msgctxt ""
+"model:account.statement.origin.information,string:information_card_number"
+msgid "Card Number"
+msgstr "Número de tarjeta"
+
+msgctxt "selection:account.statement.import.start,file_format:"
+msgid "Credicoop Precargadas"
+msgstr "Credicoop Precargadas"
+
+msgctxt "selection:party.identifier,type:"
+msgid "Precargada"
+msgstr "Precargada"
