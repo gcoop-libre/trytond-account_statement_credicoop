@@ -102,7 +102,7 @@ class Statement(object):
         'debit_total', 'credit_total', 'moves']
 
     def __init__(self, *args, **kwargs):
-        super(Statement, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.moves = []
 
 
@@ -110,4 +110,4 @@ class Move(object):
     __slots__ = list(MOVE.keys())
 
     def __init__(self, *args, **kwargs):
-        super(Move, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)

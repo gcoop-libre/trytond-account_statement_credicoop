@@ -111,8 +111,7 @@ class Statement(metaclass=PoolMeta):
 
     def _get_move_line(self, amount, amount_second_currency, lines):
         'Return counterpart Move Line for the amount'
-        move = super(Statement, self)._get_move_line(amount,
-            amount_second_currency, lines)
+        move = super()._get_move_line(amount, amount_second_currency, lines)
         if self.journal.account.party_required:
             move.party = self.lines_party
         return move
@@ -123,7 +122,7 @@ class ImportStatementStart(metaclass=PoolMeta):
 
     @classmethod
     def __setup__(cls):
-        super(ImportStatementStart, cls).__setup__()
+        super().__setup__()
         precargadas = ('credicoop_precargadas', 'Credicoop Precargadas')
         cls.file_format.selection.append(precargadas)
 
