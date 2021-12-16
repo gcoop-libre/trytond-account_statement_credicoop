@@ -8,8 +8,6 @@ class PartyIdentifier(metaclass=PoolMeta):
     __name__ = 'party.identifier'
 
     @classmethod
-    def __setup__(cls):
-        super(PartyIdentifier, cls).__setup__()
-        new_type = ('ar_tarjeta_precargada', 'Precargada')
-        if new_type not in cls.type.selection:
-            cls.type.selection.append(new_type)
+    def get_types(cls):
+        types = super().get_types()
+        return types + [('ar_tarjeta_precargada', 'Precargada')]
