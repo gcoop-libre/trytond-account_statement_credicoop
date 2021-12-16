@@ -9,8 +9,6 @@ from trytond.pool import Pool, PoolMeta
 from trytond.modules.account_statement.exceptions import ImportStatementError
 from .credicoop_precargadas import Precargadas
 
-__all__ = ['Statement', 'ImportStatementStart', 'ImportStatement']
-
 
 class Statement(metaclass=PoolMeta):
     __name__ = 'account.statement'

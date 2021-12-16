@@ -3,8 +3,6 @@
 
 from trytond.pool import PoolMeta
 
-__all__ = ['PartyIdentifier']
-
 
 class PartyIdentifier(metaclass=PoolMeta):
     __name__ = 'party.identifier'

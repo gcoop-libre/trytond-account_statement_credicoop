@@ -4,8 +4,6 @@
 from trytond.pool import PoolMeta
 from trytond.model import fields
 
-__all__ = ['Journal']
-
 
 class Journal(metaclass=PoolMeta):
     __name__ = 'account.statement.journal'

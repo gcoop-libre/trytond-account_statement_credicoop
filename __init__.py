@@ -6,8 +6,6 @@ from . import journal
 from . import statement
 from . import party
 
-__all__ = ['register']
-
 
 def register():
     Pool.register(
