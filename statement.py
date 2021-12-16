@@ -1,5 +1,6 @@
-# This file is part of Tryton.  The COPYRIGHT file at the top level of
-# this repository contains the full copyright notices and license terms.
+# The COPYRIGHT file at the top level of this repository contains
+# the full copyright notices and license terms.
+
 from io import StringIO
 from decimal import Decimal
 from itertools import groupby
@@ -19,31 +20,6 @@ class Statement(metaclass=PoolMeta):
         if parties:
             return list(set(parties))[0]
         return None
-
-    def _group_by_account_period(self, line):
-        # Group by account and period
-        key = (
-            ('account', line.account),
-            ('date', (line.date.year, line.date.month)),
-            )
-        return key
-
-    def _get_move_by_account_period(self, key):
-        pool = Pool()
-        Move = pool.get('account.move')
-        Period = pool.get('account.period')
-
-        date_period = date(key['date'][0], key['date'][1], 1)
-        period_id = Period.find(self.company.id, date=date_period)
-        date_period = Period(period_id).end_date
-        return Move(
-            period=period_id,
-            journal=self.journal.journal,
-            date=date_period,
-            origin=self,
-            company=self.company,
-            description=key['description'],
-            )
 
     @classmethod
     def create_move(cls, statements):
@@ -109,6 +85,31 @@ class Statement(metaclass=PoolMeta):
         Line.reconcile(move_lines)
         return moves
 
+    def _group_by_account_period(self, line):
+        # Group by account and period
+        key = (
+            ('account', line.account),
+            ('date', (line.date.year, line.date.month)),
+            )
+        return key
+
+    def _get_move_by_account_period(self, key):
+        pool = Pool()
+        Move = pool.get('account.move')
+        Period = pool.get('account.period')
+
+        date_period = date(key['date'][0], key['date'][1], 1)
+        period_id = Period.find(self.company.id, date=date_period)
+        date_period = Period(period_id).end_date
+        return Move(
+            period=period_id,
+            journal=self.journal.journal,
+            date=date_period,
+            origin=self,
+            company=self.company,
+            description=key['description'],
+            )
+
     def _get_move_line(self, amount, amount_second_currency, lines):
         'Return counterpart Move Line for the amount'
         move = super()._get_move_line(amount, amount_second_currency, lines)
@@ -163,9 +164,9 @@ class ImportStatement(metaclass=PoolMeta):
         Origin = pool.get('account.statement.origin')
 
         origins = Origin.search([
-                ('date', '=', move.date),
-                ('number', '=', move.op_number),
-                ])
+            ('date', '=', move.date),
+            ('number', '=', move.op_number),
+            ])
         return origins and True or False
 
     def precargadas_statement(self, ccoop_statement):
@@ -213,9 +214,9 @@ class ImportStatement(metaclass=PoolMeta):
         Identifier = pool.get('party.identifier')
 
         identifiers = Identifier.search([
-                ('type', '=', 'ar_tarjeta_precargada'),
-                ('code', '=', ccoop_statement.card_number)
-                ])
+            ('type', '=', 'ar_tarjeta_precargada'),
+            ('code', '=', ccoop_statement.card_number)
+            ])
         if len(identifiers) == 1:
             return identifiers[0].party
 
