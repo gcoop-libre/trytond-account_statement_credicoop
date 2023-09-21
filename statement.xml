@@ -9,5 +9,66 @@
             <field name="type_">char</field>
         </record>
 
+<!-- Preloaded Card Loading -->
+
+        <record model="ir.ui.view" id="preloaded_card_loading_view_list">
+            <field name="model">account.preloaded_card.loading</field>
+            <field name="type">tree</field>
+            <field name="name">preloaded_card_loading_list</field>
+        </record>
+        <record model="ir.ui.view" id="preloaded_card_loading_view_form">
+            <field name="model">account.preloaded_card.loading</field>
+            <field name="type">form</field>
+            <field name="name">preloaded_card_loading_form</field>
+        </record>
+
+        <record model="ir.ui.view" id="preloaded_card_loading_line_view_list">
+            <field name="model">account.preloaded_card.loading.line</field>
+            <field name="type">tree</field>
+            <field name="name">preloaded_card_loading_line_list</field>
+        </record>
+        <record model="ir.ui.view" id="preloaded_card_loading_line_view_form">
+            <field name="model">account.preloaded_card.loading.line</field>
+            <field name="type">form</field>
+            <field name="name">preloaded_card_loading_line_form</field>
+        </record>
+
+        <record model="ir.action.act_window" id="act_preloaded_card_loading">
+            <field name="name">Preloaded Card Loading</field>
+            <field name="res_model">account.preloaded_card.loading</field>
+        </record>
+        <record model="ir.action.act_window.view"
+            id="act_preloaded_card_loading_view_list">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="preloaded_card_loading_view_list"/>
+            <field name="act_window" ref="act_preloaded_card_loading"/>
+        </record>
+        <record model="ir.action.act_window.view"
+            id="act_preloaded_card_loading_view_form">
+            <field name="sequence" eval="20"/>
+            <field name="view" ref="preloaded_card_loading_view_form"/>
+            <field name="act_window" ref="act_preloaded_card_loading"/>
+        </record>
+
+        <menuitem id="menu_preloaded_card_loading"
+            action="act_preloaded_card_loading"
+            parent="account_statement.menu_statements" sequence="100"
+            icon="tryton-list"/>
+
+        <record model="ir.model.button" id="preloaded_card_loading_post_button">
+            <field name="name">post</field>
+            <field name="string">Post</field>
+            <field name="confirm">Are you sure you want to confirm?</field>
+            <field name="model"
+                search="[('model', '=', 'account.preloaded_card.loading')]"/>
+        </record>
+        <record model="ir.model.button" id="preloaded_card_loading_cancel_button">
+            <field name="name">cancel</field>
+            <field name="string">Cancel</field>
+            <field name="confirm">Are you sure you want to canel?</field>
+            <field name="model"
+                search="[('model', '=', 'account.preloaded_card.loading')]"/>
+        </record>
+
     </data>
 </tryton>

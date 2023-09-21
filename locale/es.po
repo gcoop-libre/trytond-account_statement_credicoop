@@ -2,9 +2,85 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
+msgctxt "field:account.preloaded_card.loading,cancel_move:"
+msgid "Cancel Move"
+msgstr "Asiento cancelación"
+
+msgctxt "field:account.preloaded_card.loading,company:"
+msgid "Company"
+msgstr "Empresa"
+
+msgctxt "field:account.preloaded_card.loading,credit_account:"
+msgid "Credit Account"
+msgstr "Cuenta haber"
+
+msgctxt "field:account.preloaded_card.loading,currency:"
+msgid "Currency"
+msgstr "Moneda"
+
+msgctxt "field:account.preloaded_card.loading,date:"
+msgid "Date"
+msgstr "Fecha"
+
+msgctxt "field:account.preloaded_card.loading,debit_account:"
+msgid "Debit Account"
+msgstr "Cuenta debe"
+
+msgctxt "field:account.preloaded_card.loading,description:"
+msgid "Description"
+msgstr "Descripción"
+
+msgctxt "field:account.preloaded_card.loading,journal:"
+msgid "Journal"
+msgstr "Diario"
+
+msgctxt "field:account.preloaded_card.loading,lines:"
+msgid "Lines"
+msgstr "Líneas"
+
+msgctxt "field:account.preloaded_card.loading,move:"
+msgid "Move"
+msgstr "Asiento"
+
+msgctxt "field:account.preloaded_card.loading,state:"
+msgid "State"
+msgstr "Estado"
+
+msgctxt "field:account.preloaded_card.loading,total_amount:"
+msgid "Total Amount"
+msgstr "Importe total"
+
+msgctxt "field:account.preloaded_card.loading.line,amount:"
+msgid "Amount"
+msgstr "Importe"
+
+msgctxt "field:account.preloaded_card.loading.line,card_loading:"
+msgid "Card Loading"
+msgstr "Carga de Tarjeta"
+
+msgctxt "field:account.preloaded_card.loading.line,card_number:"
+msgid "Card Number"
+msgstr "Número de tarjeta"
+
+msgctxt "field:account.preloaded_card.loading.line,currency:"
+msgid "Currency"
+msgstr "Moneda"
+
+msgctxt "field:account.preloaded_card.loading.line,party:"
+msgid "Party"
+msgstr "Tercero"
+
 msgctxt "field:account.statement.journal,group_moves_by_account:"
 msgid "Group moves by account"
 msgstr "Agrupar asientos por cuenta"
+
+msgctxt "help:account.preloaded_card.loading,credit_account:"
+msgid "Bank Accounting Account"
+msgstr "Cuenta contable del Banco"
+
+msgctxt "help:account.preloaded_card.loading,debit_account:"
+msgid "Party Accounting Account"
+msgstr "Cuenta contable del Tercero"
 
 msgctxt "help:account.statement.journal,group_moves_by_account:"
 msgid "Group the statement lines by account when creating moves"
@@ -12,10 +88,58 @@ msgstr ""
 "Permite agrupar las líneas del extracto por cuenta contable al crear los "
 "asientos"
 
+msgctxt "model:account.preloaded_card.loading,name:"
+msgid "Preloaded Card Loading"
+msgstr "Carga de Tarjeta precargada"
+
+msgctxt "model:account.preloaded_card.loading.line,name:"
+msgid "Preloaded Card Loading Line"
+msgstr "Línea de Carga de Tarjeta precargada"
+
 msgctxt ""
 "model:account.statement.origin.information,string:information_card_number"
 msgid "Card Number"
 msgstr "Número de tarjeta"
+
+msgctxt "model:ir.action,name:act_preloaded_card_loading"
+msgid "Preloaded Card Loading"
+msgstr "Carga de Tarjeta precargada"
+
+msgctxt "model:ir.message,text:msg_card_loading_delete"
+msgid "You cannot delete the record because it is not in draft state"
+msgstr "No puede eliminar el registro porque no está en estado borrador"
+
+msgctxt "model:ir.model.button,confirm:preloaded_card_loading_cancel_button"
+msgid "Are you sure you want to canel?"
+msgstr "¿Está seguro que desea cancelar?"
+
+msgctxt "model:ir.model.button,confirm:preloaded_card_loading_post_button"
+msgid "Are you sure you want to confirm?"
+msgstr "¿Está seguro que desea confirmar?"
+
+msgctxt "model:ir.model.button,string:preloaded_card_loading_cancel_button"
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgctxt "model:ir.model.button,string:preloaded_card_loading_post_button"
+msgid "Post"
+msgstr "Contabilizar"
+
+msgctxt "model:ir.ui.menu,name:menu_preloaded_card_loading"
+msgid "Preloaded Card Loading"
+msgstr "Carga de Tarjeta precargada"
+
+msgctxt "selection:account.preloaded_card.loading,state:"
+msgid "Cancelled"
+msgstr "Cancelado"
+
+msgctxt "selection:account.preloaded_card.loading,state:"
+msgid "Draft"
+msgstr "Borrador"
+
+msgctxt "selection:account.preloaded_card.loading,state:"
+msgid "Posted"
+msgstr "Contabilizado"
 
 msgctxt "selection:account.statement.import.start,file_format:"
 msgid "Credicoop Precargadas"
@@ -24,3 +148,11 @@ msgstr "Credicoop Precargadas"
 msgctxt "selection:party.identifier,type:"
 msgid "Precargada"
 msgstr "Precargada"
+
+msgctxt "view:account.preloaded_card.loading:"
+msgid "Lines"
+msgstr "Líneas"
+
+msgctxt "view:account.preloaded_card.loading:"
+msgid "Other Info"
+msgstr "Información adicional"

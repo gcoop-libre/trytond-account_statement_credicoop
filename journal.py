@@ -1,11 +1,11 @@
 # The COPYRIGHT file at the top level of this repository contains
 # the full copyright notices and license terms.
 
-from trytond.pool import PoolMeta
 from trytond.model import fields
+from trytond.pool import PoolMeta
 
 
-class Journal(metaclass=PoolMeta):
+class StatementJournal(metaclass=PoolMeta):
     __name__ = 'account.statement.journal'
 
     group_moves_by_account = fields.Boolean('Group moves by account',
