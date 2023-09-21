@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<form>
+    <label name="party"/>
+    <field name="party"/>
+    <label name="card_number"/>
+    <field name="card_number"/>
+    <label name="amount"/>
+    <field name="amount" symbol="currency"/>
+</form>

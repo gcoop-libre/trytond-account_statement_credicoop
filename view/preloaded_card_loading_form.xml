@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<form>
+    <label name="date"/>
+    <field name="date"/>
+    <label name="total_amount"/>
+    <field name="total_amount" symbol="currency"/>
+    <label name="description"/>
+    <field name="description"/>
+    <label name="journal"/>
+    <field name="journal"/>
+    <newline/>
+    <label name="credit_account"/>
+    <field name="credit_account"/>
+    <label name="debit_account"/>
+    <field name="debit_account"/>
+    <notebook colspan="4">
+        <page id="lines" string="Lines">
+            <field name="lines" colspan="4"/>
+        </page>
+        <page id="info" string="Other Info">
+            <label name="company"/>
+            <field name="company"/>
+            <label name="move"/>
+            <field name="move"/>
+            <label name="cancel_move"/>
+            <field name="cancel_move"/>
+        </page>
+    </notebook>
+    <label name="state"/>
+    <field name="state"/>
+    <group col="-1" colspan="2" id="buttons">
+        <button name="post" icon="tryton-ok"/>
+        <button name="cancel" icon="tryton-cancel"/>
+    </group>
+</form>

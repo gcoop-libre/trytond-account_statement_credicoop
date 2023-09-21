@@ -6,7 +6,12 @@ from decimal import Decimal
 from itertools import groupby
 from datetime import date
 
+from trytond.model import Workflow, ModelView, ModelSQL, fields
 from trytond.pool import Pool, PoolMeta
+from trytond.pyson import Eval
+from trytond.transaction import Transaction
+from trytond.exceptions import UserError
+from trytond.i18n import gettext
 from trytond.modules.account_statement.exceptions import ImportStatementError
 from .credicoop_precargadas import Precargadas
 
@@ -227,3 +232,264 @@ class ImportStatement(metaclass=PoolMeta):
             if value:
                 information['credicoop_precargadas_' + name] = value
         return information
+
+
+class PreloadedCardLoading(Workflow, ModelSQL, ModelView):
+    'Preloaded Card Loading'
+    __name__ = 'account.preloaded_card.loading'
+
+    _states = {'readonly': Eval('state') != 'draft'}
+    _depends = ['state']
+
+    date = fields.Date('Date', required=True, select=True,
+        states=_states, depends=_depends)
+    description = fields.Char('Description',
+        states=_states, depends=_depends)
+    company = fields.Many2One('company.company', 'Company',
+        required=True, select=True,
+        states=_states, depends=_depends)
+    journal = fields.Many2One('account.journal', 'Journal',
+        required=True, select=True,
+        context={'company': Eval('company', -1)},
+        states=_states, depends=['state', 'company'])
+    credit_account = fields.Many2One('account.account', 'Credit Account',
+        required=True,
+        domain=[
+            ('type', '!=', None),
+            ('closed', '!=', True),
+            ('company', '=', Eval('company', 0)),
+            ],
+        states=_states, depends=['state', 'company'],
+        help='Bank Accounting Account')
+    debit_account = fields.Many2One('account.account', 'Debit Account',
+        required=True,
+        domain=[
+            ('type', '!=', None),
+            ('closed', '!=', True),
+            ('company', '=', Eval('company', 0)),
+            ],
+        states=_states, depends=['state', 'company'],
+        help='Party Accounting Account')
+    currency = fields.Function(fields.Many2One('currency.currency',
+        'Currency'), 'on_change_with_currency')
+    total_amount = fields.Function(fields.Numeric('Total Amount',
+        digits=(16, 2)), 'on_change_with_total_amount')
+    lines = fields.One2Many('account.preloaded_card.loading.line',
+        'card_loading', 'Lines',
+        context={'company': Eval('company', -1)},
+        states=_states, depends=['state', 'company'])
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('posted', 'Posted'),
+        ('cancelled', 'Cancelled'),
+        ], 'State', readonly=True, select=True)
+    move = fields.Many2One('account.move', 'Move', readonly=True)
+    cancel_move = fields.Many2One('account.move', 'Cancel Move', readonly=True,
+        states={'invisible': ~Eval('cancel_move')})
+
+    del _states, _depends
+
+    @classmethod
+    def __setup__(cls):
+        super().__setup__()
+        cls._order[0] = ('date', 'DESC')
+        cls._transitions |= set((
+            ('draft', 'posted'),
+            ('posted', 'cancelled'),
+            ))
+        cls._buttons.update({
+            'post': {
+                'invisible': Eval('state') != 'draft',
+                'depends': ['state'],
+                },
+            'cancel': {
+                'invisible': Eval('state') != 'posted',
+                'depends': ['state'],
+                },
+            })
+
+    @staticmethod
+    def default_company():
+        return Transaction().context.get('company')
+
+    @staticmethod
+    def default_state():
+        return 'draft'
+
+    @staticmethod
+    def default_date():
+        Date = Pool().get('ir.date')
+        return Date.today()
+
+    @fields.depends('company')
+    def on_change_with_currency(self, name=None):
+        if self.company:
+            return self.company.currency.id
+
+    @fields.depends('lines')
+    def on_change_with_total_amount(self, name=None):
+        total = Decimal(0)
+        for line in self.lines:
+            total += line.amount or Decimal(0)
+        return total
+
+    @classmethod
+    def delete(cls, card_loadings):
+        for card_loading in card_loadings:
+            if card_loading.state != 'draft':
+                raise UserError(gettext(
+                    'account_statement_credicoop.msg_card_loading_delete'))
+        super().delete(card_loadings)
+
+    @classmethod
+    @ModelView.button
+    @Workflow.transition('posted')
+    def post(cls, card_loadings):
+        pool = Pool()
+        Move = pool.get('account.move')
+
+        moves = []
+        for card_loading in card_loadings:
+            move = card_loading.get_move()
+            card_loading.move = move
+            card_loading.save()
+            moves.append(move)
+
+        if moves:
+            Move.save(moves)
+            Move.post(moves)
+
+    def get_move(self):
+        pool = Pool()
+        Period = pool.get('account.period')
+        Move = pool.get('account.move')
+        MoveLine = pool.get('account.move.line')
+
+        accounting_date = self.date
+        period_id = Period.find(self.company.id, date=accounting_date)
+
+        move_lines = []
+        for line in self.lines:
+            move_line = MoveLine()
+            move_line.amount_second_currency = None
+            move_line.second_currency = None
+            move_line.debit = line.amount
+            move_line.credit = 0
+            move_line.account = self.debit_account
+            move_line.party = line.party
+            move_line.maturity_date = self.date
+            move_line.description = self.description
+            move_lines.append(move_line)
+
+        move_line = MoveLine()
+        move_line.amount_second_currency = None
+        move_line.second_currency = None
+        move_line.debit = 0
+        move_line.credit = self.total_amount
+        move_line.account = self.credit_account
+        move_line.maturity_date = self.date
+        move_line.description = self.description
+        move_lines.append(move_line)
+
+        move = Move()
+        move.journal = self.journal
+        move.period = period_id
+        move.date = accounting_date
+        move.origin = self
+        move.company = self.company
+        move.description = self.description
+        move.lines = move_lines
+        return move
+
+    @classmethod
+    @ModelView.button
+    @Workflow.transition('cancelled')
+    def cancel(cls, card_loadings):
+        pool = Pool()
+        Move = pool.get('account.move')
+
+        cancel_moves = []
+        for card_loading in card_loadings:
+            if card_loading.move:
+                move = card_loading.move.cancel()
+                card_loading.cancel_move = move
+                card_loading.save()
+                cancel_moves.append(move)
+
+        if cancel_moves:
+            Move.save(cancel_moves)
+            Move.post(cancel_moves)
+
+    @classmethod
+    @ModelView.button
+    def export_file(cls, card_loadings):
+        pass
+
+    @classmethod
+    def copy(cls, card_loadings, default=None):
+        if default is None:
+            default = {}
+        else:
+            default = default.copy()
+        default.setdefault('move', None)
+        default.setdefault('cancel_move', None)
+        return super().copy(card_loadings, default=default)
+
+
+class PreloadedCardLoading2(metaclass=PoolMeta):
+    __name__ = 'account.preloaded_card.loading'
+
+    @fields.depends('credit_account', 'debit_account', 'journal', 'lines')
+    def on_change_credit_account(self):
+        self.add_lines()
+
+    @fields.depends('credit_account', 'debit_account', 'journal', 'lines')
+    def on_change_debit_account(self):
+        self.add_lines()
+
+    @fields.depends('credit_account', 'debit_account', 'journal', 'lines')
+    def on_change_journal(self):
+        self.add_lines()
+
+    def add_lines(self):
+        pool = Pool()
+        Partner = pool.get('cooperative.partner')
+        CardLoadingLine = pool.get('account.preloaded_card.loading.line')
+
+        lines = []
+        if (not self.credit_account or not self.debit_account or
+                not self.journal):
+            self.lines = lines
+            return
+
+        if self.lines:
+            return
+
+        partners = Partner.search([('status', '=', 'active')],
+            order=[('file', 'ASC')])
+        for partner in partners:
+            line = CardLoadingLine()
+            line.party = partner.party
+            line.amount = Decimal(0)
+            lines.append(line)
+
+        self.lines = lines
+
+
+class PreloadedCardLoadingLine(ModelSQL, ModelView):
+    'Preloaded Card Loading Line'
+    __name__ = 'account.preloaded_card.loading.line'
+
+    card_loading = fields.Many2One('account.preloaded_card.loading',
+        'Card Loading', required=True, ondelete='CASCADE')
+    party = fields.Many2One('party.party', 'Party')
+    card_number = fields.Char('Card Number')
+    currency = fields.Function(fields.Many2One('currency.currency',
+        'Currency'), 'on_change_with_currency')
+    amount = fields.Numeric('Amount', required=True,
+        digits=(16, 2))
+
+    @fields.depends('card_loading', '_parent_card_loading.journal')
+    def on_change_with_currency(self, name=None):
+        if self.card_loading and self.card_loading.journal:
+            return self.card_loading.journal.currency.id

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<tree>
+    <field name="date"/>
+    <field name="description"/>
+    <field name="total_amount"/>
+    <field name="state"/>
+</tree>
