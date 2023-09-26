@@ -1,12 +1,14 @@
 # The COPYRIGHT file at the top level of this repository contains
 # the full copyright notices and license terms.
-
 from io import StringIO
 from decimal import Decimal
 from itertools import groupby
 from datetime import date
+from unicodedata import normalize as unicode_normalize
+from unicodedata import category as unicode_category
 
 from trytond.model import Workflow, ModelView, ModelSQL, fields
+from trytond.report import Report
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import Eval
 from trytond.transaction import Transaction
@@ -220,7 +222,7 @@ class ImportStatement(metaclass=PoolMeta):
 
         identifiers = Identifier.search([
             ('type', '=', 'ar_tarjeta_precargada'),
-            ('code', '=', ccoop_statement.card_number)
+            ('code', '=', ccoop_statement.card_number),
             ])
         if len(identifiers) == 1:
             return identifiers[0].party
@@ -303,6 +305,10 @@ class PreloadedCardLoading(Workflow, ModelSQL, ModelView):
                 'depends': ['state'],
                 },
             'cancel': {
+                'invisible': Eval('state') != 'posted',
+                'depends': ['state'],
+                },
+            'export_file': {
                 'invisible': Eval('state') != 'posted',
                 'depends': ['state'],
                 },
@@ -421,7 +427,8 @@ class PreloadedCardLoading(Workflow, ModelSQL, ModelView):
             Move.post(cancel_moves)
 
     @classmethod
-    @ModelView.button
+    @ModelView.button_action(
+        'account_statement_credicoop.report_preloaded_card_loading')
     def export_file(cls, card_loadings):
         pass
 
@@ -455,6 +462,7 @@ class PreloadedCardLoading2(metaclass=PoolMeta):
         pool = Pool()
         Partner = pool.get('cooperative.partner')
         CardLoadingLine = pool.get('account.preloaded_card.loading.line')
+        Identifier = pool.get('party.identifier')
 
         lines = []
         if (not self.credit_account or not self.debit_account or
@@ -468,8 +476,17 @@ class PreloadedCardLoading2(metaclass=PoolMeta):
         partners = Partner.search([('status', '=', 'active')],
             order=[('file', 'ASC')])
         for partner in partners:
+            card_number = None
+            identifiers = Identifier.search([
+                ('party', '=', partner.party),
+                ('type', '=', 'ar_tarjeta_precargada'),
+                ])
+            if len(identifiers) == 1:
+                card_number = identifiers[0].code
+
             line = CardLoadingLine()
             line.party = partner.party
+            line.card_number = card_number
             line.amount = Decimal(0)
             lines.append(line)
 
@@ -493,3 +510,40 @@ class PreloadedCardLoadingLine(ModelSQL, ModelView):
     def on_change_with_currency(self, name=None):
         if self.card_loading and self.card_loading.journal:
             return self.card_loading.journal.currency.id
+
+
+class PreloadedCardLoadingReport(Report):
+    'Preloaded Card Loading Report'
+    __name__ = 'account.preloaded_card.loading.report'
+
+    @classmethod
+    def get_context(cls, records, header, data):
+        pool = Pool()
+        CardLoading = pool.get('account.preloaded_card.loading')
+
+        def justify(string, size):
+            return string[:size].ljust(size)
+
+        def format_decimal(n):
+            if not isinstance(n, Decimal):
+                n = Decimal(n)
+            return ('{0:.2f}'.format(abs(n))).replace('.', '').rjust(9, '0')
+
+        def strip_accents(s):
+            return ''.join(c for c in unicode_normalize('NFD', s)
+                if unicode_category(c) != 'Mn')
+
+        context = super().get_context(records, header, data)
+
+        context['records'] = []
+        for record in CardLoading.browse(data['ids']):
+            for line in record.lines:
+                context['records'].append({
+                    'card_number': line.card_number,
+                    'amount': line.amount,
+                    'description': record.description,
+                    })
+        context['justify'] = justify
+        context['format_decimal'] = format_decimal
+        context['strip_accents'] = strip_accents
+        return context

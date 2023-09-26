@@ -69,6 +69,23 @@
             <field name="model"
                 search="[('model', '=', 'account.preloaded_card.loading')]"/>
         </record>
+        <record model="ir.model.button" id="preloaded_card_loading_export_file_button">
+            <field name="name">export_file</field>
+            <field name="string">Export File</field>
+            <field name="model"
+                search="[('model', '=', 'account.preloaded_card.loading')]"/>
+        </record>
+
+<!-- Preloaded Card Loading Report -->
+
+        <record model="ir.action.report" id="report_preloaded_card_loading">
+            <field name="name">Preloaded Card Loading</field>
+            <field name="model">account.preloaded_card.loading</field>
+            <field name="report_name">account.preloaded_card.loading.report</field>
+            <field name="report">account_statement_credicoop/preloaded_card_loading.txt</field>
+            <field name="template_extension">txt</field>
+            <field name="translatable" eval="False"/>
+        </record>
 
     </data>
 </tryton>

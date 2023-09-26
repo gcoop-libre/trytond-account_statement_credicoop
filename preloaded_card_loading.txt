@@ -1,0 +1,3 @@
+{% for record in records %}\
+${justify(record.card_number, 16)}${format_decimal(record.amount)}${justify(strip_accents(record.description), 35)}
+{% end %}\

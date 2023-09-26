@@ -25,3 +25,6 @@ def register():
     Pool.register(
         statement.ImportStatement,
         module='account_statement_credicoop', type_='wizard')
+    Pool.register(
+        statement.PreloadedCardLoadingReport,
+        module='account_statement_credicoop', type_='report')
