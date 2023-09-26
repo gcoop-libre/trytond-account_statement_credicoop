@@ -30,6 +30,7 @@
     <field name="state"/>
     <group col="-1" colspan="2" id="buttons">
         <button name="post" icon="tryton-ok"/>
+        <button name="export_file" icon="tryton-export"/>
         <button name="cancel" icon="tryton-cancel"/>
     </group>
 </form>

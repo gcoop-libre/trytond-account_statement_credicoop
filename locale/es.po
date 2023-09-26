@@ -105,6 +105,10 @@ msgctxt "model:ir.action,name:act_preloaded_card_loading"
 msgid "Preloaded Card Loading"
 msgstr "Carga de Tarjeta precargada"
 
+msgctxt "model:ir.action,name:report_preloaded_card_loading"
+msgid "Preloaded Card Loading"
+msgstr "Carga de Tarjeta precargada"
+
 msgctxt "model:ir.message,text:msg_card_loading_delete"
 msgid "You cannot delete the record because it is not in draft state"
 msgstr "No puede eliminar el registro porque no está en estado borrador"
@@ -120,6 +124,11 @@ msgstr "¿Está seguro que desea confirmar?"
 msgctxt "model:ir.model.button,string:preloaded_card_loading_cancel_button"
 msgid "Cancel"
 msgstr "Cancelar"
+
+msgctxt ""
+"model:ir.model.button,string:preloaded_card_loading_export_file_button"
+msgid "Export File"
+msgstr "Exportar Archivo"
 
 msgctxt "model:ir.model.button,string:preloaded_card_loading_post_button"
 msgid "Post"
