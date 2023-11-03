@@ -497,19 +497,40 @@ class PreloadedCardLoadingLine(ModelSQL, ModelView):
     'Preloaded Card Loading Line'
     __name__ = 'account.preloaded_card.loading.line'
 
+    _states = {'readonly': Eval('state') != 'draft'}
+    _depends = ['state']
+
     card_loading = fields.Many2One('account.preloaded_card.loading',
         'Card Loading', required=True, ondelete='CASCADE')
-    party = fields.Many2One('party.party', 'Party')
-    card_number = fields.Char('Card Number')
-    currency = fields.Function(fields.Many2One('currency.currency',
-        'Currency'), 'on_change_with_currency')
+    party = fields.Many2One('party.party', 'Party',
+        states=_states, depends=_depends)
+    card_number = fields.Char('Card Number',
+        states=_states, depends=_depends)
     amount = fields.Numeric('Amount', required=True,
-        digits=(16, 2))
+        digits=(16, 2), states=_states, depends=_depends)
+    currency = fields.Function(fields.Many2One('currency.currency',
+        'Currency'), 'get_parent_field')
+    state = fields.Function(fields.Selection([
+        ('draft', 'Draft'),
+        ('posted', 'Posted'),
+        ('cancelled', 'Cancelled'),
+        ], 'State'), 'get_parent_field')
 
-    @fields.depends('card_loading', '_parent_card_loading.journal')
-    def on_change_with_currency(self, name=None):
-        if self.card_loading and self.card_loading.journal:
-            return self.card_loading.journal.currency.id
+    del _states, _depends
+
+    @classmethod
+    def get_parent_field(cls, lines, names):
+        result = {}
+        for name in names:
+            result[name] = {}
+            if cls._fields[name]._type == 'many2one':
+                for l in lines:
+                    field = getattr(l.card_loading, name, None)
+                    result[name][l.id] = field.id if field else None
+            else:
+                for l in lines:
+                    result[name][l.id] = getattr(l.card_loading, name, None)
+        return result
 
 
 class PreloadedCardLoadingReport(Report):

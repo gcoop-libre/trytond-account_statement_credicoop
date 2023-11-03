@@ -70,6 +70,10 @@ msgctxt "field:account.preloaded_card.loading.line,party:"
 msgid "Party"
 msgstr "Tercero"
 
+msgctxt "field:account.preloaded_card.loading.line,state:"
+msgid "State"
+msgstr "Estado"
+
 msgctxt "field:account.statement.journal,group_moves_by_account:"
 msgid "Group moves by account"
 msgstr "Agrupar asientos por cuenta"
@@ -147,6 +151,18 @@ msgid "Draft"
 msgstr "Borrador"
 
 msgctxt "selection:account.preloaded_card.loading,state:"
+msgid "Posted"
+msgstr "Contabilizado"
+
+msgctxt "selection:account.preloaded_card.loading.line,state:"
+msgid "Cancelled"
+msgstr "Cancelado"
+
+msgctxt "selection:account.preloaded_card.loading.line,state:"
+msgid "Draft"
+msgstr "Borrador"
+
+msgctxt "selection:account.preloaded_card.loading.line,state:"
 msgid "Posted"
 msgstr "Contabilizado"
 
