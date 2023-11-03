@@ -2,6 +2,6 @@
 <tree>
     <field name="date"/>
     <field name="description"/>
-    <field name="total_amount"/>
+    <field name="total_amount" symbol="currency"/>
     <field name="state"/>
 </tree>
