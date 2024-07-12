@@ -543,8 +543,8 @@ class PreloadedCardLoadingReport(Report):
         CardLoading = pool.get('account.preloaded_card.loading')
 
         def justify(string, size):
-            #return string[:size].ljust(size)
-            return string[:size]
+            return string.ljust(size)
+            # return string[:size]
 
         def format_decimal(n):
             if not isinstance(n, Decimal):
