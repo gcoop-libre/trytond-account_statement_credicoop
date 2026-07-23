@@ -50,6 +50,36 @@
             <field name="act_window" ref="act_preloaded_card_loading"/>
         </record>
 
+        <!-- Rule Group for Company Isolation -->
+        <record model="ir.rule.group" id="rule_group_preloaded_card_loading_companies">
+            <field name="name">User in companies</field>
+            <field name="model">account.preloaded_card.loading</field>
+            <field name="global_p" eval="True"/>
+        </record>
+
+        <!-- Rule Domain matching user companies -->
+        <record model="ir.rule" id="rule_preloaded_card_loading_companies">
+            <field name="domain"
+                eval="[('company', 'in', Eval('companies', []))]"
+                pyson="1"/>
+            <field name="rule_group" ref="rule_group_preloaded_card_loading_companies"/>
+        </record>
+
+        <!-- Preloaded Card Loading Line Company Isolation -->
+        <record model="ir.rule.group" id="rule_group_preloaded_card_loading_line_companies">
+            <field name="name">User in companies</field>
+            <field name="model">account.preloaded_card.loading.line</field>
+            <field name="global_p" eval="True"/>
+        </record>
+
+        <!-- Rule Domain matching user companies -->
+        <record model="ir.rule" id="rule_preloaded_card_loading_line_companies">
+            <field name="domain"
+                eval="[('card_loading.company', 'in', Eval('user', {}).get('companies', []))]"
+                pyson="1"/>
+            <field name="rule_group" ref="rule_group_preloaded_card_loading_line_companies"/>
+        </record>
+
         <menuitem id="menu_preloaded_card_loading"
             action="act_preloaded_card_loading"
             parent="account_statement.menu_statements" sequence="100"

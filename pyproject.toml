@@ -61,7 +61,13 @@ dependencies = []
 copyright = 'COPYRIGHT'
 readme = 'README.rst'
 
+[tool.hatch.metadata.hooks.tryton.prefixes]
+cooperative_ar = 'trytonar'
+
 [tool.hatch.metadata.hooks.tryton-ar]
+
+[tool.hatch.metadata.hooks.tryton-ar.external-repos]
+cooperative_ar = 'gcoop-libre/trytond-cooperative_ar'
 
 [tool.hatch.metadata.hooks.tryton.tryton-optional-dependencies]
 test = ['proteus']

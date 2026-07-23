@@ -243,15 +243,15 @@ class PreloadedCardLoading(Workflow, ModelSQL, ModelView):
     _states = {'readonly': Eval('state') != 'draft'}
     _depends = ['state']
 
-    date = fields.Date('Date', required=True, select=True,
+    date = fields.Date('Date', required=True,
         states=_states, depends=_depends)
     description = fields.Char('Description',
         states=_states, depends=_depends)
     company = fields.Many2One('company.company', 'Company',
-        required=True, select=True,
+        required=True,
         states=_states, depends=_depends)
     journal = fields.Many2One('account.journal', 'Journal',
-        required=True, select=True,
+        required=True,
         context={'company': Eval('company', -1)},
         states=_states, depends=['state', 'company'])
     credit_account = fields.Many2One('account.account', 'Credit Account',
@@ -284,7 +284,7 @@ class PreloadedCardLoading(Workflow, ModelSQL, ModelView):
         ('draft', 'Draft'),
         ('posted', 'Posted'),
         ('cancelled', 'Cancelled'),
-        ], 'State', readonly=True, select=True)
+        ], 'State', readonly=True)
     move = fields.Many2One('account.move', 'Move', readonly=True)
     cancel_move = fields.Many2One('account.move', 'Cancel Move', readonly=True,
         states={'invisible': ~Eval('cancel_move')})
@@ -294,7 +294,10 @@ class PreloadedCardLoading(Workflow, ModelSQL, ModelView):
     @classmethod
     def __setup__(cls):
         super().__setup__()
-        cls._order[0] = ('date', 'DESC')
+        cls._order = [
+            ('date', 'DESC'),
+            ('id', 'DESC'),
+        ]
         cls._transitions |= set((
             ('draft', 'posted'),
             ('posted', 'cancelled'),
@@ -474,7 +477,10 @@ class PreloadedCardLoading2(metaclass=PoolMeta):
             return
 
         partners = Partner.search([('status', '=', 'active')],
-            order=[('file', 'ASC')])
+            order=[
+                ('file', 'ASC'),
+                ('id', 'DESC'),
+            ])
         for partner in partners:
             card_number = None
             identifiers = Identifier.search([
