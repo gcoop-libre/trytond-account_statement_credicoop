@@ -75,7 +75,7 @@
         <!-- Rule Domain matching user companies -->
         <record model="ir.rule" id="rule_preloaded_card_loading_line_companies">
             <field name="domain"
-                eval="[('card_loading.company', 'in', Eval('user', {}).get('companies', []))]"
+                eval="[('company', 'in', Eval('companies', []))]"
                 pyson="1"/>
             <field name="rule_group" ref="rule_group_preloaded_card_loading_line_companies"/>
         </record>

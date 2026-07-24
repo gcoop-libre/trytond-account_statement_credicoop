@@ -278,8 +278,7 @@ class PreloadedCardLoading(Workflow, ModelSQL, ModelView):
         digits=(16, 2)), 'on_change_with_total_amount')
     lines = fields.One2Many('account.preloaded_card.loading.line',
         'card_loading', 'Lines',
-        context={'company': Eval('company', -1)},
-        states=_states, depends=['state', 'company'])
+        states=_states, depends=['state'])
     state = fields.Selection([
         ('draft', 'Draft'),
         ('posted', 'Posted'),
@@ -509,11 +508,15 @@ class PreloadedCardLoadingLine(ModelSQL, ModelView):
     card_loading = fields.Many2One('account.preloaded_card.loading',
         'Card Loading', required=True, ondelete='CASCADE')
     party = fields.Many2One('party.party', 'Party',
-        states=_states, depends=_depends)
+        context={'company': Eval('company', -1)},
+        states=_states, depends=_depends + ['company'])
     card_number = fields.Char('Card Number',
         states=_states, depends=_depends)
     amount = fields.Numeric('Amount', required=True,
         digits=(16, 2), states=_states, depends=_depends)
+    company = fields.Function(
+        fields.Many2One('company.company', "Company"),
+        'on_change_with_company', searcher='search_company')
     currency = fields.Function(fields.Many2One('currency.currency',
         'Currency'), 'get_parent_field')
     state = fields.Function(fields.Selection([
@@ -523,6 +526,14 @@ class PreloadedCardLoadingLine(ModelSQL, ModelView):
         ], 'State'), 'get_parent_field')
 
     del _states, _depends
+
+    @fields.depends('card_loading', '_parent_card_loading.company')
+    def on_change_with_company(self, name=None):
+        return self.card_loading.company if self.card_loading else None
+
+    @classmethod
+    def search_company(cls, name, clause):
+        return [('card_loading.company' + clause[0][len(name):], *clause[1:])]
 
     @classmethod
     def get_parent_field(cls, lines, names):
