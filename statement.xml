@@ -91,16 +91,31 @@
             <field name="confirm">Are you sure you want to confirm?</field>
             <field name="model">account.preloaded_card.loading</field>
         </record>
+        <record model="ir.model.button-res.group"
+            id="preloaded_card_loading_post_button_group_account_statement">
+            <field name="button" ref="preloaded_card_loading_post_button"/>
+            <field name="group" ref="account_statement.group_statement"/>
+        </record>
         <record model="ir.model.button" id="preloaded_card_loading_cancel_button">
             <field name="name">cancel</field>
             <field name="string">Cancel</field>
             <field name="confirm">Are you sure you want to canel?</field>
             <field name="model">account.preloaded_card.loading</field>
         </record>
+        <record model="ir.model.button-res.group"
+            id="preloaded_card_loading_cancel_button_group_account_statement">
+            <field name="button" ref="preloaded_card_loading_cancel_button"/>
+            <field name="group" ref="account_statement.group_statement"/>
+        </record>
         <record model="ir.model.button" id="preloaded_card_loading_export_file_button">
             <field name="name">export_file</field>
             <field name="string">Export File</field>
             <field name="model">account.preloaded_card.loading</field>
+        </record>
+        <record model="ir.model.button-res.group"
+            id="preloaded_card_loading_export_button_group_account_statement">
+            <field name="button" ref="preloaded_card_loading_export_file_button"/>
+            <field name="group" ref="account_statement.group_statement"/>
         </record>
 
 <!-- Preloaded Card Loading Report -->
@@ -113,6 +128,39 @@
             <field name="template_extension">txt</field>
             <field name="translatable" eval="False"/>
         </record>
+
+        <record model="ir.model.access" id="access_preloaded_card_loading">
+            <field name="model">account.preloaded_card.loading</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.model.access" id="access_statement_preloaded_card_loading">
+            <field name="model">account.preloaded_card.loading</field>
+            <field name="group" ref="account_statement.group_statement"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="True"/>
+        </record>
+
+        <record model="ir.model.access" id="access_preloaded_card_loading_line">
+            <field name="model">account.preloaded_card.loading.line</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.model.access" id="access_statement_preloaded_card_loading_line">
+            <field name="model">account.preloaded_card.loading.line</field>
+            <field name="group" ref="account_statement.group_statement"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="True"/>
+        </record>
+
 
     </data>
 </tryton>
